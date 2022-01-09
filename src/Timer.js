@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 
-class Timer extends Component {
+class Timer extends PureComponent {
   constructor() {
     super();
     this.timer = React.createRef();
@@ -22,6 +22,26 @@ class Timer extends Component {
   componentWillUnmount() {
     clearInterval(this.interval);
   }
+
+  //font color updates in two ways:
+  // every update, which is the interval (one second)
+  //and by pressing - and +, it also causes App, and subsequently each timer to re-render(update or state change), thus also changing font color
+  //to prevent the effect of - and +, use shouldComponentUpdate
+  componentDidUpdate() {
+    this.timer.current.style.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+  }
+
+  //this prevents the - and + button from updating the color, because of the App's state changes!
+  //control what triggers update, only when |current time !== next time| then update, so only update
+  // on the setInterval update!! (NOT the increment update, like with the + and - buttons )
+  
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   if (this.state.time === nextState.time) {
+  //     return false //return shouldComponentUpdate is false, so dont change color of the font, on any other App state changes
+  //   }
+  //   return true
+  // }
+  //ALTERNATIVE SOLUTION: use PureComponent to compare current and next props/state, it only allows update it it registers a change/difference.
 
   render() {
     const { time, color, logText } = this.state;
